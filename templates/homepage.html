@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <h1 class="text-lg-center">Gallery</h1>
+        </div>
+
+    </div>
+    <div class="row">
+        {% for photo in photos %}
+            <div class="col-md-4 mt-3 mb-3">
+                <div class="card overflow-hidden">
+                    <div class="card-body overflow-hidden">
+                        {#                            <img src="{{ photo.photo.url }}" alt="">#}
+                        {% thumbnail photo.photo "500x300" crop="center" as im %}
+                            <a href="{% url 'photo-detail' photo.id %}">
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"
+                                 data-toggle="popover" data-imageid="{{ photo.id }}" alt="" class="img">
+                            </a>
+                        {% endthumbnail %}
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <h1 class="text-lg-center">Videos</h1>
+        </div>
+    </div>
+
+    {% for video in all_videos %}
+        <div class="row justify-content-center">
+            <div class="col-md-8 mt-3 mb-3">
+                <video width="100%" height="100%" controls loop muted class="video-nairobi">
+                    <source src="{{ video.video.url }}" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+
+            // on image hover get the value of data-imageid and send a get request to url 'imagedetails'
+            // on success append the response to the div with id image-details
+            const img = Array.from(document.getElementsByClassName('img'))
+
+            img.forEach(image => {
+                image.addEventListener('mouseover', e => {
+                    e.preventDefault()
+                    $.ajax({
+                        url:{% url 'image-details' %},
+                        method: "GET",
+                        data: {
+                            'photoid': e.target.dataset.imageid
+                        },
+                        dataType: 'json',
+                        success: data => {
+                            console.log(data)
+                            /*
+                                                        $('[data-toggle="popover"]').popover({
+                                                            placement: 'top',
+                                                            trigger: 'hover',
+                                                            html: true,
+                                                            content: `<div class="media" id="pop"><img src="${data['photo_url']}" class="mr-3 img-fluid" alt="Sample Image"><div class="media-body"><h5 class="media-heading">${data['title']}</h5><p>${data['description']}</p></div></div>`
+
+                                                            // remove content on mouse out
+                                                            // content: function () {
+                                                            //     return $('#pop').html();
+
+                                                        });
+                            */
+
+                        },
+                        error: err => {
+                            console.log(err)
+                        }
+
+                    })
+                })
+                image.addEventListener('mouseout', e => {
+                    e.preventDefault()
+                    $('[data-toggle="popover"]').content = ""
+
+                })
+            })
+        })
+
+
+        // on mouse out remove the popper
+
+
+    </script>
+{% endblock %}

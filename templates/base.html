@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nairobi Safaris</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <style>
+        * {
+            font-family: sans-serif, 'Roboto';
+            font-size: 16px;
+        }
+
+        .carousel-item {
+            height: 65vh;
+            min-height: 350px;
+            background: no-repeat center center scroll;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .text-caption {
+            color: deeppink;
+        }
+
+        .video-nairobi {
+            border-radius: 10px;
+            overflow: hidden;
+
+
+        }
+    </style>
+</head>
+<body>
+{% include 'navbar.html' %}
+{% if request.path == "/" %}
+    {% include 'carousel.html' %}
+{% endif %}
+<div class="container pt-5">
+
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+<script src="{% static 'js/jquery-3.6.1.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/all.min.js' %}"></script>
+{% block scripts %}
+
+{% endblock %}
+<script>
+    let limits = 15.0;
+
+    $(".card").mousemove(function (e) {
+        let rect = e.target.getBoundingClientRect();
+        let x = e.clientX - rect.left; //x position within the element.
+        let y = e.clientY - rect.top; //y position within the element.
+        let offsetX = x / rect.width;
+        let offsetY = y / rect.height;
+
+        let rotateY = (offsetX) * (limits * 2) - limits;
+        let rotateX = (offsetY) * (limits * 2) - limits;
+
+        let shadowOffsetX = (offsetX) * 32 - 16;
+        let shadowOffsetY = (offsetY) * 32 - 16;
+
+        $(this).css({
+            "box-shadow": (1 / 6) * -shadowOffsetX + "px " + (1 / 6) * -shadowOffsetY + "px 3px rgba(0, 0, 0, 0.051), " +
+                (2 / 6) * -shadowOffsetX + "px " + (2 / 6) * -shadowOffsetY + "px 7.2px rgba(0, 0, 0, 0.073), " +
+                (3 / 6) * -shadowOffsetX + "px " + (3 / 6) * -shadowOffsetY + "px 13.6px rgba(0, 0, 0, 0.09), " +
+                (4 / 6) * -shadowOffsetX + "px " + (4 / 6) * -shadowOffsetY + "px 24.3px rgba(0, 0, 0, 0.107), " +
+                (5 / 6) * -shadowOffsetX + "px " + (5 / 6) * -shadowOffsetY + "px 45.5px rgba(0, 0, 0, 0.129), " +
+                -shadowOffsetX + "px " + -shadowOffsetY + "px 109px rgba(0, 0, 0, 0.18)",
+            transform: "perspective(1000px) rotateX(" + -rotateX + "deg) rotateY(" + rotateY + "deg)"
+        });
+
+        let glarePos = rotateX + rotateY + 90;
+        $(this)
+            .children()
+            .children()
+            .css("left", glarePos + "%");
+    });
+
+    $(".card").mouseleave(function (e) {
+        $(".card").css({
+            "box-shadow": "0px 0px 3px rgba(0, 0, 0, 0.051), 0px 0px 7.2px rgba(0, 0, 0, 0.073), 0px 0px 13.6px rgba(0, 0, 0, 0.09), 0px 0px 24.3px rgba(0, 0, 0, 0.107), 0px 0px 45.5px rgba(0, 0, 0, 0.129), 0px 0px 109px rgba(0, 0, 0, 0.18)",
+            "transform": "scale(1.0)"
+        });
+        $(".glare").css("left", "100%");
+    });
+
+    const video = Array.from(document.getElementsByClassName('video-nairobi'));
+
+    video.forEach(video => {
+        //onlick event
+        video.addEventListener('click', () => {
+            //play the video
+            video.play();
+        })
+        video.addEventListener('mouseover', () => {
+            // zoom in
+            video.style.transform = 'scale(1.1)';
+
+        });
+
+        // zoom out
+        video.addEventListener('mouseout', () => {
+            video.style.transform = 'scale(1)';
+        });
+    });
+</script>
+{% include 'footer.html' %}
+</body>
+</html>
